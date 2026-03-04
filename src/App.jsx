@@ -7,7 +7,7 @@ const projects = [
     stack: ['Python', 'Flask', 'MTA API'],
     status: 'Live',
     color: 'var(--color-subway)',
-    url: 'https://subway.pyon.dev',
+    url: 'https://subway.michaelpyon.com',
   },
   {
     name: 'ShooterDigest',
@@ -15,7 +15,7 @@ const projects = [
     stack: ['Python', 'Flask', 'Steam API', 'Reddit API'],
     status: 'Live',
     color: 'var(--color-shooter)',
-    url: 'https://shooter.pyon.dev',
+    url: 'https://shooter.michaelpyon.com',
   },
   {
     name: 'VintageMap',
@@ -23,23 +23,23 @@ const projects = [
     stack: ['React', 'Vite', 'Python', 'Flask'],
     status: 'Live',
     color: 'var(--color-vintage)',
-    url: 'https://vintage.pyon.dev',
+    url: 'https://vintage.michaelpyon.com',
   },
   {
     name: 'MassageOS',
     tagline: 'Massage booking reimagined with a 58-region anatomical body map. Clients tap where it hurts, therapists see the full picture before the session starts.',
     stack: ['Next.js', 'Prisma', 'TypeScript'],
-    status: 'Coming soon',
+    status: 'Live',
     color: 'var(--color-massage)',
-    url: 'https://massage.pyon.dev',
+    url: 'https://massage.michaelpyon.com',
   },
   {
     name: 'Random Pin Cuisine',
     tagline: 'Drop a pin on any spot on Earth, and find restaurants serving that region\'s cuisine in New York City. 80+ countries with local cuisine lookups.',
     stack: ['React', 'Vite', 'Leaflet', 'OSM'],
-    status: 'Coming soon',
+    status: 'Live',
     color: 'var(--color-pin)',
-    url: 'https://pin.pyon.dev',
+    url: 'https://random-pin.michaelpyon.com',
   },
 ]
 
@@ -120,24 +120,12 @@ export default function App() {
     <div className="min-h-screen bg-bg">
       {/* Hero */}
       <header className="px-6 pt-16 pb-20 max-w-2xl mx-auto sm:pt-24 sm:pb-28">
-        <p
-          className="text-text-subtle text-xs font-mono tracking-widest uppercase mb-6 animate-fade-in"
-          style={{ animationDelay: '100ms' }}
-        >
-          pyon.dev
-        </p>
         <h1
           className="font-display text-5xl sm:text-7xl text-text tracking-tight leading-[0.95] mb-6 animate-fade-up"
           style={{ animationDelay: '200ms' }}
         >
           Michael Pyon
         </h1>
-        <p
-          className="text-text-muted text-base sm:text-lg leading-relaxed max-w-md animate-fade-up"
-          style={{ animationDelay: '350ms' }}
-        >
-          Strategy operator at Xbox. Building side projects to stay close to the product layer.
-        </p>
       </header>
 
       {/* Projects */}
@@ -188,7 +176,7 @@ export default function App() {
             LinkedIn
           </a>
           <a
-            href="mailto:hello@pyon.dev"
+            href="mailto:michaelpyon@gmail.com"
             className="text-text-subtle text-xs font-mono tracking-wide hover:text-text transition-colors"
           >
             Email
