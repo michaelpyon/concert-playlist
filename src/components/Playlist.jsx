@@ -1,6 +1,66 @@
+import { useState } from 'react'
+import { saveSetlistToYouTube } from '../lib/youtube'
+
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
 export default function Playlist({ artist, results, playlistUrl, onReset, onBack }) {
   const found = results.filter((r) => r.videoId)
   const notFound = results.filter((r) => !r.videoId)
+  const videoIds = found.map((r) => r.videoId)
+
+  // Save-to-YouTube state
+  const [saveState, setSaveState] = useState('idle') // idle | saving | done | error
+  const [savePhase, setSavePhase] = useState('')      // auth | creating | adding
+  const [saveProgress, setSaveProgress] = useState({ current: 0, total: 0 })
+  const [savedPlaylistUrl, setSavedPlaylistUrl] = useState(null)
+  const [saveError, setSaveError] = useState(null)
+  const [saveStats, setSaveStats] = useState(null)
+
+  async function handleSaveToYouTube() {
+    if (!CLIENT_ID) {
+      setSaveError('OAuth not configured. Missing VITE_GOOGLE_CLIENT_ID.')
+      setSaveState('error')
+      return
+    }
+
+    setSaveState('saving')
+    setSaveError(null)
+
+    try {
+      const result = await saveSetlistToYouTube(
+        CLIENT_ID,
+        artist,
+        videoIds,
+        (phase, current, total) => {
+          setSavePhase(phase)
+          setSaveProgress({ current, total })
+        }
+      )
+
+      setSavedPlaylistUrl(result.playlistUrl)
+      setSaveStats({ added: result.addedCount, failed: result.failedCount })
+      setSaveState('done')
+    } catch (err) {
+      setSaveError(err.message)
+      setSaveState('error')
+    }
+  }
+
+  function getSaveButtonContent() {
+    switch (saveState) {
+      case 'saving':
+        if (savePhase === 'auth') return 'Signing in...'
+        if (savePhase === 'creating') return 'Creating playlist...'
+        if (savePhase === 'adding') return `Adding songs (${saveProgress.current}/${saveProgress.total})...`
+        return 'Saving...'
+      case 'done':
+        return 'Saved!'
+      case 'error':
+        return 'Try Again'
+      default:
+        return 'Save to YouTube'
+    }
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -24,20 +84,69 @@ export default function Playlist({ artist, results, playlistUrl, onReset, onBack
             {artist && <> for <span className="text-on-surface font-medium">{artist}</span></>}
           </p>
         </div>
-        <div className="flex gap-3">
-          {playlistUrl && (
+
+        {/* Action buttons */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Save to YouTube (primary action) */}
+          {saveState === 'done' && savedPlaylistUrl ? (
             <a
-              href={playlistUrl}
+              href={savedPlaylistUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-amber text-bg font-label font-bold uppercase tracking-widest text-xs px-8 py-4 flex items-center gap-3 hover:bg-amber-light transition-colors"
             >
+              <span className="material-symbols-outlined text-xl">playlist_add_check</span>
+              Open Playlist on YouTube
+            </a>
+          ) : (
+            <button
+              onClick={handleSaveToYouTube}
+              disabled={saveState === 'saving' || videoIds.length === 0}
+              className="bg-amber text-bg font-label font-bold uppercase tracking-widest text-xs px-8 py-4 flex items-center gap-3 hover:bg-amber-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {saveState === 'saving' ? (
+                <div className="w-5 h-5 border-2 border-bg/30 border-t-bg rounded-full animate-spin shrink-0" />
+              ) : (
+                <span className="material-symbols-outlined text-xl">
+                  {saveState === 'error' ? 'refresh' : 'playlist_add'}
+                </span>
+              )}
+              {getSaveButtonContent()}
+            </button>
+          )}
+
+          {/* Play All (secondary, temporary URL fallback) */}
+          {playlistUrl && (
+            <a
+              href={savedPlaylistUrl || playlistUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-surface-high text-on-surface font-label font-bold uppercase tracking-widest text-xs px-8 py-4 flex items-center gap-3 hover:bg-surface-bright transition-colors"
+            >
               <span className="material-symbols-outlined text-xl">play_circle</span>
-              Play All on YouTube
+              Play All
             </a>
           )}
         </div>
       </section>
+
+      {/* Save status messages */}
+      {saveState === 'error' && saveError && (
+        <div className="mb-6 p-4 bg-red-container/20 border-l-2 border-red text-red text-sm">
+          {saveError}
+        </div>
+      )}
+
+      {saveState === 'done' && saveStats && (
+        <div className="mb-6 p-4 bg-amber/10 border-l-2 border-amber text-amber-light text-sm flex items-center gap-3">
+          <span className="material-symbols-outlined">check_circle</span>
+          <span>
+            Playlist saved! {saveStats.added} songs added
+            {saveStats.failed > 0 && `, ${saveStats.failed} failed`}.
+            Named <strong>"Concert Prep: {artist}"</strong>.
+          </span>
+        </div>
+      )}
 
       {/* Song list */}
       <div className="space-y-2">
@@ -63,7 +172,6 @@ export default function Playlist({ artist, results, playlistUrl, onReset, onBack
                   className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                 />
                 <div className="absolute inset-0 bg-amber/10" />
-                {/* Play icon overlay */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="material-symbols-outlined text-white text-2xl drop-shadow-lg">play_arrow</span>
                 </div>
