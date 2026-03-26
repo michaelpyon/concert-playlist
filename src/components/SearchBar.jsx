@@ -1,35 +1,74 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 export default function SearchBar({ onSelectArtist, loading }) {
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const [searching, setSearching] = useState(false)
+  const [hasSearched, setHasSearched] = useState(false)
   const inputRef = useRef(null)
+  const debounceRef = useRef(null)
 
   // Auto-focus the search input on mount
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
 
-  async function handleSearch(e) {
-    e.preventDefault()
-    if (!query.trim() || query.trim().length < 2) return
+  const fetchSuggestions = useCallback(async (q) => {
+    if (!q.trim() || q.trim().length < 2) {
+      setSuggestions([])
+      setHasSearched(false)
+      return
+    }
 
     setSearching(true)
     setSuggestions([])
 
     try {
-      const res = await fetch(`/api/search-artist?q=${encodeURIComponent(query)}`)
+      const res = await fetch(`/api/search-artist?q=${encodeURIComponent(q)}`)
       const data = await res.json()
       setSuggestions(data.artists?.length ? data.artists : [])
+      setHasSearched(true)
     } catch {
       setSuggestions([])
+      setHasSearched(true)
     } finally {
       setSearching(false)
+    }
+  }, [])
+
+  function handleChange(e) {
+    const val = e.target.value
+    setQuery(val)
+    setHasSearched(false)
+
+    // Debounce: auto-search after 400ms pause
+    clearTimeout(debounceRef.current)
+    if (val.trim().length >= 2) {
+      debounceRef.current = setTimeout(() => {
+        fetchSuggestions(val)
+      }, 400)
+    } else {
+      setSuggestions([])
+    }
+  }
+
+  // Search button / Enter: select top suggestion if dropdown is open, else fetch
+  function handleSubmit(e) {
+    e.preventDefault()
+    if (!query.trim() || query.trim().length < 2) return
+
+    if (suggestions.length > 0) {
+      // Submit = pick the top result
+      selectArtist(suggestions[0])
+    } else {
+      // No suggestions yet — fetch immediately (don't wait for debounce)
+      clearTimeout(debounceRef.current)
+      fetchSuggestions(query)
     }
   }
 
   function selectArtist(artist) {
+    clearTimeout(debounceRef.current)
     setSuggestions([])
     setQuery(artist.name)
     onSelectArtist(artist)
@@ -54,7 +93,7 @@ export default function SearchBar({ onSelectArtist, loading }) {
         {/* Decorative corner */}
         <div className="absolute -top-4 -left-4 w-12 h-12 bg-surface-variant opacity-20 pointer-events-none" />
 
-        <form onSubmit={handleSearch}>
+        <form onSubmit={handleSubmit}>
           <div className="relative bg-surface border-b-2 border-amber shadow-2xl">
             <div className="flex items-center gap-4 px-6 py-8">
               <span className="material-symbols-outlined text-amber text-3xl">search</span>
@@ -62,7 +101,7 @@ export default function SearchBar({ onSelectArtist, loading }) {
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={handleChange}
                 placeholder="Who are you seeing?"
                 className="bg-transparent border-none w-full text-2xl md:text-3xl font-headline placeholder:text-on-surface-muted/30 text-on-surface outline-none focus:ring-0"
                 disabled={loading}
@@ -110,16 +149,16 @@ export default function SearchBar({ onSelectArtist, loading }) {
             {/* Dropdown footer */}
             <div className="bg-surface-lowest px-6 py-3 border-t border-on-surface/5 flex justify-between items-center">
               <span className="font-label text-[10px] text-on-surface-muted uppercase tracking-widest">
-                {suggestions.length} matches found
+                {suggestions.length} matches — press Search or Enter to select top result
               </span>
             </div>
           </div>
         )}
 
-        {/* Empty state after search */}
-        {!searching && suggestions.length === 0 && query.trim().length >= 2 && (
+        {/* Empty state after search with no results */}
+        {!searching && hasSearched && suggestions.length === 0 && query.trim().length >= 2 && (
           <div className="mt-4 text-on-surface-faint font-label text-sm text-center py-4">
-            Press Enter or click Search to find artists
+            No artists found for "{query}"
           </div>
         )}
 
