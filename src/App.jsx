@@ -59,12 +59,12 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950 to-gray-950 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-bg via-accent-dim to-bg text-text">
       <header className="pt-12 pb-8 px-6 text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-gradient-start via-gradient-mid to-gradient-end bg-clip-text text-transparent">
           Concert Prep
         </h1>
-        <p className="mt-3 text-white/50 text-lg max-w-md mx-auto">
+        <p className="mt-3 text-text-subtle text-lg max-w-md mx-auto">
           Get ready for your next show. We'll find the likely setlist and build you a YouTube playlist to learn every song.
         </p>
       </header>
@@ -78,16 +78,16 @@ export default function App() {
             <div key={label} className="flex items-center gap-2">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
-                  isActive ? 'bg-purple-600 text-white' : 'bg-white/10 text-white/30'
+                  isActive ? 'bg-accent text-text' : 'bg-surface text-text-subtle'
                 }`}
               >
                 {i + 1}
               </div>
-              <span className={`text-sm hidden sm:inline transition-colors ${isActive ? 'text-white' : 'text-white/30'}`}>
+              <span className={`text-sm hidden sm:inline transition-colors ${isActive ? 'text-text' : 'text-text-subtle'}`}>
                 {label}
               </span>
               {i < 2 && (
-                <div className={`w-8 h-0.5 ${i < stepIndex ? 'bg-purple-600' : 'bg-white/10'}`} />
+                <div className={`w-8 h-0.5 ${i < stepIndex ? 'bg-accent' : 'bg-border'}`} />
               )}
             </div>
           )
@@ -96,7 +96,7 @@ export default function App() {
 
       <main className="px-6 pb-20">
         {error && (
-          <div className="max-w-xl mx-auto mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl text-red-300 text-sm text-center">
+          <div className="max-w-xl mx-auto mb-6 p-4 bg-danger/20 border border-danger/30 rounded-xl text-danger text-sm text-center">
             {error}
           </div>
         )}
@@ -105,8 +105,8 @@ export default function App() {
           <div>
             <SearchBar onSelectArtist={handleSelectArtist} loading={loading} />
             {loading && (
-              <div className="text-center mt-8 text-white/50">
-                <div className="inline-block w-6 h-6 border-2 border-white/20 border-t-purple-500 rounded-full animate-spin" />
+              <div className="text-center mt-8 text-text-subtle">
+                <div className="inline-block w-6 h-6 border-2 border-border border-t-accent rounded-full animate-spin" />
                 <p className="mt-2">Loading setlists...</p>
               </div>
             )}
@@ -118,12 +118,12 @@ export default function App() {
             <div className="text-center mb-6">
               <button
                 onClick={handleReset}
-                className="text-sm text-white/40 hover:text-white/70 transition-colors"
+                className="text-sm text-text-subtle hover:text-text-muted transition-colors"
               >
                 &larr; Back to search
               </button>
-              <h2 className="text-lg text-white/70 mt-2">
-                Showing setlists for <span className="text-white font-semibold">{artist?.name}</span>
+              <h2 className="text-lg text-text-muted mt-2">
+                Showing setlists for <span className="text-text font-semibold">{artist?.name}</span>
               </h2>
             </div>
             <SetlistPicker
@@ -144,7 +144,7 @@ export default function App() {
         )}
       </main>
 
-      <footer className="text-center pb-8 text-white/20 text-xs">
+      <footer className="text-center pb-8 text-text-subtle text-xs">
         Powered by setlist.fm and YouTube
       </footer>
     </div>

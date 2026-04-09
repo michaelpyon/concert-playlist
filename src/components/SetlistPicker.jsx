@@ -39,7 +39,7 @@ export default function SetlistPicker({ setlists, onGeneratePlaylist, loading })
 
   if (!setlists.length) {
     return (
-      <div className="text-center text-white/50 py-8">
+      <div className="text-center text-text-subtle py-8">
         No recent setlists found for this artist.
       </div>
     );
@@ -48,18 +48,18 @@ export default function SetlistPicker({ setlists, onGeneratePlaylist, loading })
   return (
     <div className="w-full max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-white">Recent Setlists</h2>
+        <h2 className="text-xl font-bold text-text">Recent Setlists</h2>
         <div className="flex gap-3">
           <button
             onClick={selectAll}
-            className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+            className="text-sm text-accent hover:text-accent-hover transition-colors"
           >
             {selected.size === setlists.length ? 'Deselect All' : 'Select All'}
           </button>
           <button
             onClick={handleGenerate}
             disabled={selected.size === 0 || loading}
-            className="px-5 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white font-semibold text-sm transition-colors"
+            className="px-5 py-2 bg-success hover:bg-success/80 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-text font-semibold text-sm transition-colors"
           >
             {loading ? 'Generating...' : `Generate Playlist (${selected.size})`}
           </button>
@@ -73,31 +73,31 @@ export default function SetlistPicker({ setlists, onGeneratePlaylist, loading })
             onClick={() => toggleSetlist(setlist.id)}
             className={`w-full text-left p-4 rounded-xl border transition-all ${
               selected.has(setlist.id)
-                ? 'bg-purple-600/20 border-purple-500/50'
-                : 'bg-white/5 border-white/10 hover:bg-white/10'
+                ? 'bg-accent-dim border-accent/50'
+                : 'bg-surface border-border hover:bg-surface-hover'
             }`}
           >
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-white font-medium">
+                <div className="text-text font-medium">
                   {setlist.venue}
                 </div>
-                <div className="text-white/50 text-sm">
+                <div className="text-text-subtle text-sm">
                   {setlist.city}{setlist.country ? `, ${setlist.country}` : ''} &middot; {setlist.eventDate}
                 </div>
                 {setlist.tour && (
-                  <div className="text-purple-400 text-sm mt-1">{setlist.tour}</div>
+                  <div className="text-accent text-sm mt-1">{setlist.tour}</div>
                 )}
               </div>
-              <div className="text-white/40 text-sm">
+              <div className="text-text-subtle text-sm">
                 {setlist.songs.length} songs
               </div>
             </div>
             {selected.has(setlist.id) && setlist.songs.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-white/10">
+              <div className="mt-3 pt-3 border-t border-border">
                 <div className="flex flex-wrap gap-2">
                   {setlist.songs.filter(s => !s.tape).map((song, i) => (
-                    <span key={i} className="text-xs bg-white/10 text-white/70 px-2 py-1 rounded-md">
+                    <span key={i} className="text-xs bg-surface-hover text-text-muted px-2 py-1 rounded-md">
                       {song.name}
                     </span>
                   ))}
