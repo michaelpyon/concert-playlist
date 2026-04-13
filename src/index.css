@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+<<<<<<< HEAD
 @theme inline {
   --color-bg: #0a0a0a;
   --color-surface: #141414;
@@ -25,16 +26,79 @@ html {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+=======
+/* Concert Prep design system: venue-dark + stage-amber */
+@theme {
+  --color-bg: #131313;
+  --color-surface: #201f1f;
+  --color-surface-high: #2a2a2a;
+  --color-surface-low: #1c1b1b;
+  --color-surface-lowest: #0e0e0e;
+  --color-surface-bright: #393939;
+  --color-surface-variant: #353534;
+
+  --color-amber: #FFB300;
+  --color-amber-light: #ffd79b;
+  --color-amber-dim: #ffba38;
+  --color-amber-dark: #7e5700;
+
+  --color-on-surface: #e5e2e1;
+  --color-on-surface-muted: #d6c4ac;
+  --color-on-surface-faint: #9e8e78;
+
+  --color-green: #a7d565;
+  --color-green-container: #476e02;
+  --color-red: #ffb4ab;
+  --color-red-container: #93000a;
+
+  --font-headline: "Epilogue", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-label: "Space Grotesk", system-ui, sans-serif;
+}
+
+html {
+  background-color: #131313;
+  color: #e5e2e1;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+>>>>>>> origin/main
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
+<<<<<<< HEAD
   min-height: 100vh;
   background-color: var(--color-bg);
 }
 
 ::selection {
   background: var(--color-accent-dim);
+=======
+  min-height: 100dvh;
+}
+
+::selection {
+  background: #FFB30030;
+  color: #6b4900;
+}
+
+/* Material Symbols config */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  vertical-align: middle;
+}
+
+/* Soundboard meter segments for loading state */
+.meter-segment {
+  height: 8px;
+  width: 4px;
+>>>>>>> origin/main
 }

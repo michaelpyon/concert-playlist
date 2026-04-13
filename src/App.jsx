@@ -2,6 +2,7 @@ import { useState } from 'react'
 import SearchBar from './components/SearchBar'
 import SetlistPicker from './components/SetlistPicker'
 import Playlist from './components/Playlist'
+import LoadingState from './components/LoadingState'
 
 export default function App() {
   const [step, setStep] = useState('search')
@@ -9,11 +10,13 @@ export default function App() {
   const [setlists, setSetlists] = useState([])
   const [playlist, setPlaylist] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [loadingPhase, setLoadingPhase] = useState('')
   const [error, setError] = useState(null)
 
   async function handleSelectArtist(selectedArtist) {
     setArtist(selectedArtist)
     setLoading(true)
+    setLoadingPhase('setlists')
     setError(null)
 
     try {
@@ -26,13 +29,16 @@ export default function App() {
       setError(err.message)
     } finally {
       setLoading(false)
+      setLoadingPhase('')
     }
   }
 
   async function handleGeneratePlaylist(songs) {
     if (!songs.length) return
     setLoading(true)
+    setLoadingPhase('playlist')
     setError(null)
+    setStep('generating')
 
     try {
       const songsParam = songs.join('|')
@@ -45,8 +51,10 @@ export default function App() {
       setStep('playlist')
     } catch (err) {
       setError(err.message)
+      setStep('setlists')
     } finally {
       setLoading(false)
+      setLoadingPhase('')
     }
   }
 
@@ -58,6 +66,7 @@ export default function App() {
     setError(null)
   }
 
+<<<<<<< HEAD
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg via-accent-dim to-bg text-text">
       <header className="pt-12 pb-8 px-6 text-center">
@@ -92,16 +101,53 @@ export default function App() {
             </div>
           )
         })}
+=======
+  function handleBackToSetlists() {
+    setStep('setlists')
+    setPlaylist(null)
+    setError(null)
+  }
+
+  return (
+    <div className="min-h-screen bg-bg text-on-surface font-body relative">
+      {/* Asymmetric background panel */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-surface-low opacity-40" />
+        <div className="absolute left-10 top-0 w-px h-64 bg-amber/20" />
+>>>>>>> origin/main
       </div>
 
-      <main className="px-6 pb-20">
+      {/* Top bar */}
+      <header className="fixed top-0 z-50 w-full bg-bg flex justify-between items-center px-6 py-4">
+        <button onClick={handleReset} className="flex items-center gap-3 group">
+          <span className="material-symbols-outlined text-amber text-2xl">theater_comedy</span>
+          <h1 className="font-headline font-bold tracking-tight text-on-surface text-xl group-hover:text-amber-light transition-colors">
+            Concert Prep
+          </h1>
+        </button>
+        {step !== 'search' && (
+          <button
+            onClick={handleReset}
+            className="font-label text-[10px] tracking-widest uppercase text-on-surface/60 hover:text-amber transition-colors px-2 py-1"
+          >
+            New Search
+          </button>
+        )}
+      </header>
+
+      <main className="pt-24 pb-20 px-6 max-w-4xl mx-auto">
         {error && (
+<<<<<<< HEAD
           <div className="max-w-xl mx-auto mb-6 p-4 bg-danger/20 border border-danger/30 rounded-xl text-danger text-sm text-center">
+=======
+          <div className="mb-6 p-4 bg-red-container/20 border-l-2 border-red text-red text-sm">
+>>>>>>> origin/main
             {error}
           </div>
         )}
 
         {step === 'search' && (
+<<<<<<< HEAD
           <div>
             <SearchBar onSelectArtist={handleSelectArtist} loading={loading} />
             {loading && (
@@ -132,6 +178,23 @@ export default function App() {
               loading={loading}
             />
           </div>
+=======
+          <SearchBar onSelectArtist={handleSelectArtist} loading={loading} />
+        )}
+
+        {step === 'setlists' && (
+          <SetlistPicker
+            artist={artist}
+            setlists={setlists}
+            onGeneratePlaylist={handleGeneratePlaylist}
+            onBack={handleReset}
+            loading={loading}
+          />
+        )}
+
+        {step === 'generating' && (
+          <LoadingState artist={artist?.name} />
+>>>>>>> origin/main
         )}
 
         {step === 'playlist' && (
@@ -140,12 +203,20 @@ export default function App() {
             results={playlist?.results || []}
             playlistUrl={playlist?.playlistUrl}
             onReset={handleReset}
+            onBack={handleBackToSetlists}
           />
         )}
       </main>
 
+<<<<<<< HEAD
       <footer className="text-center pb-8 text-text-subtle text-xs">
         Powered by setlist.fm and YouTube
+=======
+      <footer className="text-center py-8 border-t border-on-surface/10">
+        <p className="font-label text-[11px] uppercase text-on-surface/40 tracking-widest">
+          Powered by setlist.fm + YouTube
+        </p>
+>>>>>>> origin/main
       </footer>
     </div>
   )

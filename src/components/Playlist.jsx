@@ -1,40 +1,172 @@
-export default function Playlist({ artist, results, playlistUrl, onReset }) {
-  const found = results.filter((r) => r.videoId);
-  const notFound = results.filter((r) => !r.videoId);
+import { useState } from 'react'
+import { saveSetlistToYouTube } from '../lib/youtube'
+
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
+export default function Playlist({ artist, results, playlistUrl, onReset, onBack }) {
+  const found = results.filter((r) => r.videoId)
+  const notFound = results.filter((r) => !r.videoId)
+  const videoIds = found.map((r) => r.videoId)
+
+  // Save-to-YouTube state
+  const [saveState, setSaveState] = useState('idle') // idle | saving | done | error
+  const [savePhase, setSavePhase] = useState('')      // auth | creating | adding
+  const [saveProgress, setSaveProgress] = useState({ current: 0, total: 0 })
+  const [savedPlaylistUrl, setSavedPlaylistUrl] = useState(null)
+  const [saveError, setSaveError] = useState(null)
+  const [saveStats, setSaveStats] = useState(null)
+
+  async function handleSaveToYouTube() {
+    if (!CLIENT_ID) {
+      setSaveError('OAuth not configured. Missing VITE_GOOGLE_CLIENT_ID.')
+      setSaveState('error')
+      return
+    }
+
+    setSaveState('saving')
+    setSaveError(null)
+
+    try {
+      const result = await saveSetlistToYouTube(
+        CLIENT_ID,
+        artist,
+        videoIds,
+        (phase, current, total) => {
+          setSavePhase(phase)
+          setSaveProgress({ current, total })
+        }
+      )
+
+      setSavedPlaylistUrl(result.playlistUrl)
+      setSaveStats({ added: result.addedCount, failed: result.failedCount })
+      setSaveState('done')
+    } catch (err) {
+      setSaveError(err.message)
+      setSaveState('error')
+    }
+  }
+
+  function getSaveButtonContent() {
+    switch (saveState) {
+      case 'saving':
+        if (savePhase === 'auth') return 'Signing in...'
+        if (savePhase === 'creating') return 'Creating playlist...'
+        if (savePhase === 'adding') return `Adding songs (${saveProgress.current}/${saveProgress.total})...`
+        return 'Saving...'
+      case 'done':
+        return 'Saved!'
+      case 'error':
+        return 'Try Again'
+      default:
+        return 'Save to YouTube'
+    }
+  }
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="w-full max-w-4xl mx-auto">
+      {/* Header */}
+      <section className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
+<<<<<<< HEAD
           <h2 className="text-2xl font-bold text-text">Your Playlist</h2>
           <p className="text-text-subtle text-sm mt-1">
+=======
+          <button
+            onClick={onBack}
+            className="font-label text-on-surface-faint text-xs uppercase tracking-widest hover:text-amber transition-colors mb-4 block"
+          >
+            ← Back to setlists
+          </button>
+          <span className="font-label text-amber text-xs tracking-[0.3em] uppercase mb-4 block">
+            Stage 03: Ready
+          </span>
+          <h2 className="font-headline text-4xl md:text-5xl font-black tracking-tighter text-on-surface leading-none">
+            The <span className="text-amber">Setlist</span>
+          </h2>
+          <p className="mt-3 text-on-surface-muted text-sm">
+>>>>>>> origin/main
             {found.length} of {results.length} songs found on YouTube
+            {artist && <> for <span className="text-on-surface font-medium">{artist}</span></>}
           </p>
         </div>
-        <div className="flex gap-3">
-          {playlistUrl && (
+
+        {/* Action buttons */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Save to YouTube (primary action) */}
+          {saveState === 'done' && savedPlaylistUrl ? (
             <a
-              href={playlistUrl}
+              href={savedPlaylistUrl}
               target="_blank"
               rel="noopener noreferrer"
+<<<<<<< HEAD
               className="px-5 py-2.5 bg-danger hover:bg-danger/80 rounded-lg text-text font-semibold text-sm transition-colors inline-flex items-center gap-2"
+=======
+              className="bg-amber text-bg font-label font-bold uppercase tracking-widest text-xs px-8 py-4 flex items-center gap-3 hover:bg-amber-light transition-colors"
+>>>>>>> origin/main
             >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
-                <path d="M9.545 15.568V8.432L15.818 12z" fill="#fff" />
-              </svg>
-              Play All on YouTube
+              <span className="material-symbols-outlined text-xl">playlist_add_check</span>
+              Open Playlist on YouTube
+            </a>
+          ) : (
+            <button
+              onClick={handleSaveToYouTube}
+              disabled={saveState === 'saving' || videoIds.length === 0}
+              className="bg-amber text-bg font-label font-bold uppercase tracking-widest text-xs px-8 py-4 flex items-center gap-3 hover:bg-amber-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {saveState === 'saving' ? (
+                <div className="w-5 h-5 border-2 border-bg/30 border-t-bg rounded-full animate-spin shrink-0" />
+              ) : (
+                <span className="material-symbols-outlined text-xl">
+                  {saveState === 'error' ? 'refresh' : 'playlist_add'}
+                </span>
+              )}
+              {getSaveButtonContent()}
+            </button>
+          )}
+
+          {/* Play All (secondary, temporary URL fallback) */}
+          {playlistUrl && (
+            <a
+              href={savedPlaylistUrl || playlistUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-surface-high text-on-surface font-label font-bold uppercase tracking-widest text-xs px-8 py-4 flex items-center gap-3 hover:bg-surface-bright transition-colors"
+            >
+              <span className="material-symbols-outlined text-xl">play_circle</span>
+              Play All
             </a>
           )}
+<<<<<<< HEAD
           <button
             onClick={onReset}
             className="px-5 py-2.5 bg-surface hover:bg-surface-hover rounded-lg text-text font-semibold text-sm transition-colors"
           >
             New Search
           </button>
+=======
+>>>>>>> origin/main
         </div>
-      </div>
+      </section>
 
+      {/* Save status messages */}
+      {saveState === 'error' && saveError && (
+        <div className="mb-6 p-4 bg-red-container/20 border-l-2 border-red text-red text-sm">
+          {saveError}
+        </div>
+      )}
+
+      {saveState === 'done' && saveStats && (
+        <div className="mb-6 p-4 bg-amber/10 border-l-2 border-amber text-amber-light text-sm flex items-center gap-3">
+          <span className="material-symbols-outlined">check_circle</span>
+          <span>
+            Playlist saved! {saveStats.added} songs added
+            {saveStats.failed > 0 && `, ${saveStats.failed} failed`}.
+            Named <strong>"Concert Prep: {artist}"</strong>.
+          </span>
+        </div>
+      )}
+
+      {/* Song list */}
       <div className="space-y-2">
         {found.map((item, i) => (
           <a
@@ -42,12 +174,23 @@ export default function Playlist({ artist, results, playlistUrl, onReset }) {
             href={`https://www.youtube.com/watch?v=${item.videoId}`}
             target="_blank"
             rel="noopener noreferrer"
+<<<<<<< HEAD
             className="flex items-center gap-4 p-3 rounded-xl bg-surface hover:bg-surface-hover border border-border transition-all group"
           >
             <span className="text-text-subtle text-sm font-mono w-6 text-right shrink-0">
               {i + 1}
+=======
+            className="flex items-center gap-4 p-4 bg-surface hover:bg-surface-high transition-colors group"
+          >
+            {/* Track number */}
+            <span className="font-label text-xs font-bold text-on-surface-faint w-6 text-right shrink-0">
+              {String(i + 1).padStart(2, '0')}
+>>>>>>> origin/main
             </span>
+
+            {/* Thumbnail */}
             {item.thumbnail && (
+<<<<<<< HEAD
               <img
                 src={item.thumbnail}
                 alt=""
@@ -63,22 +206,76 @@ export default function Playlist({ artist, results, playlistUrl, onReset }) {
             <svg className="w-5 h-5 text-text-subtle group-hover:text-danger shrink-0 transition-colors" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z" />
             </svg>
+=======
+              <div className="relative w-24 h-16 bg-surface-lowest shrink-0 overflow-hidden">
+                <img
+                  src={item.thumbnail}
+                  alt=""
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                />
+                <div className="absolute inset-0 bg-amber/10" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="material-symbols-outlined text-white text-2xl drop-shadow-lg">play_arrow</span>
+                </div>
+              </div>
+            )}
+
+            {/* Song info */}
+            <div className="flex-grow min-w-0">
+              <h3 className="font-headline text-lg font-bold leading-none truncate mb-1 group-hover:text-amber-light transition-colors">
+                {item.song}
+              </h3>
+              <p className="font-body text-sm text-on-surface-muted truncate">
+                {item.channel || artist}
+              </p>
+            </div>
+
+            {/* Arrow */}
+            <span className="material-symbols-outlined text-on-surface-faint opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+              open_in_new
+            </span>
+>>>>>>> origin/main
           </a>
         ))}
       </div>
 
+      {/* Not found songs */}
       {notFound.length > 0 && (
+<<<<<<< HEAD
         <div className="mt-6 p-4 bg-surface rounded-xl border border-border">
           <h3 className="text-text-subtle text-sm font-medium mb-2">Not found on YouTube:</h3>
           <div className="flex flex-wrap gap-2">
             {notFound.map((item, i) => (
               <span key={i} className="text-xs bg-surface-hover text-text-subtle px-2 py-1 rounded-md">
+=======
+        <div className="mt-8 p-5 bg-surface-low border-l-4 border-on-surface-faint">
+          <h3 className="font-label text-xs uppercase tracking-widest text-on-surface-faint mb-3">
+            Not found on YouTube
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {notFound.map((item, i) => (
+              <span
+                key={i}
+                className="font-label text-[10px] bg-surface-lowest text-on-surface-faint px-2 py-1 uppercase tracking-wider"
+              >
+>>>>>>> origin/main
                 {item.song}
               </span>
             ))}
           </div>
         </div>
       )}
+
+      {/* Start over */}
+      <div className="mt-12 text-center">
+        <button
+          onClick={onReset}
+          className="font-label text-amber text-xs uppercase tracking-[0.3em] hover:text-amber-light transition-colors inline-flex items-center gap-2"
+        >
+          <span className="material-symbols-outlined text-sm">restart_alt</span>
+          Start Over
+        </button>
+      </div>
     </div>
-  );
+  )
 }
