@@ -17,7 +17,7 @@ export default function Playlist({ artist, results, playlistUrl, onReset }) {
               href={playlistUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-5 py-2.5 bg-danger hover:bg-danger/80 rounded-lg text-text font-semibold text-sm transition-colors inline-flex items-center gap-2"
+              className="px-5 min-h-[44px] bg-danger hover:bg-danger/80 rounded-lg text-text font-semibold text-sm transition-colors inline-flex items-center gap-2"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
@@ -28,7 +28,7 @@ export default function Playlist({ artist, results, playlistUrl, onReset }) {
           )}
           <button
             onClick={onReset}
-            className="px-5 py-2.5 bg-surface hover:bg-surface-hover rounded-lg text-text font-semibold text-sm transition-colors"
+            className="px-5 min-h-[44px] bg-surface hover:bg-surface-hover rounded-lg text-text font-semibold text-sm transition-colors inline-flex items-center"
           >
             New Search
           </button>
@@ -42,7 +42,7 @@ export default function Playlist({ artist, results, playlistUrl, onReset }) {
             href={`https://www.youtube.com/watch?v=${item.videoId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-4 p-3 rounded-xl bg-surface hover:bg-surface-hover border border-border transition-all group"
+            className="flex items-center gap-4 p-3 min-h-[56px] rounded-xl bg-surface hover:bg-surface-hover border border-border transition-colors group"
           >
             <span className="text-text-subtle text-sm font-mono w-6 text-right shrink-0">
               {i + 1}

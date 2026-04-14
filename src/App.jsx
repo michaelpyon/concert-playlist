@@ -118,7 +118,7 @@ export default function App() {
             <div className="text-center mb-6">
               <button
                 onClick={handleReset}
-                className="text-sm text-text-subtle hover:text-text-muted transition-colors"
+                className="text-sm text-text-subtle hover:text-text-muted transition-colors min-h-[44px] px-3 inline-flex items-center"
               >
                 &larr; Back to search
               </button>

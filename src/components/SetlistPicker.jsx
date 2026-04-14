@@ -52,14 +52,14 @@ export default function SetlistPicker({ setlists, onGeneratePlaylist, loading })
         <div className="flex gap-3">
           <button
             onClick={selectAll}
-            className="text-sm text-accent hover:text-accent-hover transition-colors"
+            className="text-sm text-accent hover:text-accent-hover transition-colors min-h-[44px] px-3 inline-flex items-center"
           >
             {selected.size === setlists.length ? 'Deselect All' : 'Select All'}
           </button>
           <button
             onClick={handleGenerate}
             disabled={selected.size === 0 || loading}
-            className="px-5 py-2 bg-success hover:bg-success/80 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-text font-semibold text-sm transition-colors"
+            className="px-5 min-h-[44px] bg-success hover:bg-success/80 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-text font-semibold text-sm transition-colors inline-flex items-center"
           >
             {loading ? 'Generating...' : `Generate Playlist (${selected.size})`}
           </button>
@@ -71,7 +71,7 @@ export default function SetlistPicker({ setlists, onGeneratePlaylist, loading })
           <button
             key={setlist.id}
             onClick={() => toggleSetlist(setlist.id)}
-            className={`w-full text-left p-4 rounded-xl border transition-all ${
+            className={`w-full text-left p-4 rounded-xl border transition-colors ${
               selected.has(setlist.id)
                 ? 'bg-accent-dim border-accent/50'
                 : 'bg-surface border-border hover:bg-surface-hover'
