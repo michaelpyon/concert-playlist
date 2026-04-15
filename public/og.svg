@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#1a1a18"/>
+  <rect x="0" y="0" width="1200" height="4" fill="#8b5cf6"/>
+  <text x="600" y="280" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="72" font-weight="700" fill="#fafaf9" letter-spacing="-2">Concert Playlist</text>
+  <text x="600" y="340" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="28" font-weight="400" fill="#a8a29e">Auto-generate playlists from tour setlists</text>
+  <rect x="570" y="370" width="60" height="2" fill="#8b5cf6" rx="1"/>
+  <text x="1160" y="596" text-anchor="end" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="16" font-weight="500" fill="#78716c" letter-spacing="1">michaelpyon.com</text>
+</svg>
